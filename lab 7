@@ -1,0 +1,43 @@
+# 16.12 Hrypas Oleksandr isi 2 Lab 7
+
+# zadanie 1
+# 1)
+drop table kreatura;
+create table uczestnicy select * from wikingowie.uczestnicy;
+create table kreatura select * from wikingowie.kreatura;
+create table etapy_wyprawy select * from wikingowie.etapy_wyprawy;
+create table sektor select * from wikingowie.sektor;
+create table wyprawa select * from wikingowie.wyprawa;
+select * from kreatura;
+
+# 2)
+
+select idKreatury from kreatura;
+select distinct id_uczestnika from uczestnicy;
+select k.nazwa from kreatura k left join wyprawa w on k.idKreatury=w.idKreatury where w.idKreatury is null;
+
+# 3)
+
+
+select * from wyprawa;
+
+select w.nazwa , sum(e.ilosc) from wyprawa w inner join uczestnicy u on w.id_wyprawy=u.id_wyprawy
+inner join ekwipunek e on e.idKreatury=u.id_uczestnika group by w.nazwa;
+
+
+# zadanie 2
+# 1)
+select w.nazwa, count(u.id_uczestnika), group_concat(k.nazwa separator '|')
+from wyprawa w
+join uczestnicy u on w.id_wyprawy=u.id_wyprawy
+join kreatura k on k.idKreatury=u.id_uczestnika
+group by w.id_wyprawy;
+
+# 2)
+
+select w.nazwa, s.nazwa, ew kolejnosc, k.nazwa as kierownik
+from wyprawa w
+join kreatura k on w.kierownik=k.idKreatury
+join etapy_wyprawy ew on ew.idWyprawy=w.id_wyprawy
+join sektor s on s.id_sektora=ew.sektor
+order by w.data_rozpoczecia asc, ew.kolejnosc desc
