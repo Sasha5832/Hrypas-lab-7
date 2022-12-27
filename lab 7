@@ -34,10 +34,59 @@ join kreatura k on k.idKreatury=u.id_uczestnika
 group by w.id_wyprawy;
 
 # 2)
-
-select w.nazwa, s.nazwa, ew kolejnosc, k.nazwa as kierownik
+select w.nazwa, s.nazwa, ew.kolejnosc, k.nazwa as kierownik 
 from wyprawa w
-join kreatura k on w.kierownik=k.idKreatury
+join kreatura k on w.kierownik=k.idKreatury 
 join etapy_wyprawy ew on ew.idWyprawy=w.id_wyprawy
 join sektor s on s.id_sektora=ew.sektor
-order by w.data_rozpoczecia asc, ew.kolejnosc desc
+order by w.data_rozpoczecia asc, ew.kolejnosc desc;
+
+# zadanie 3
+
+# 1)
+
+select count(etapy_wyprawy.sektor) as ilosc_odwiedzin,
+sektor.nazwa from sektor
+left join etapy_wyprawy on (etapy_wyprawy.sektor=sektor.id_sektora)
+group by sektor.id_sektora; 
+
+# 2) 
+
+select k.nazwa , if(count(uczestnicy.id_wyprawy)>0,"bral udzial w wyprawie","nie bral udzial w wyprawie")
+from kreatura k
+left join uczestnicy
+on k.idKreatury = uczestnicy.id_uczestnika
+group by k.nazwa;
+
+# zadanie 4
+
+# 1)
+
+select w.nazwa, sum(length(ew.dziennik)) dlugosc
+from etapy_wyprawy ew
+join wyprawa w on w.id_wyprawy = ew.idWyprawy
+group by w.nazwa having dlugosc<400;
+
+# 2)
+
+select w.nazwa, sum(e.ilosc*z.waga)/count(distinct u.id_uczestnika) as srednio
+from wyprawa w 
+join uczestnicy u on
+w.id_wyprawy=u.id_wyprawy
+join ekwipunek e on u.id_uczestnika=e.idKreatury
+join zasob z on e.idZasobu=z.idZasobu
+group by w.id_wyprawy;
+
+# zadanie 5
+
+# 1)
+
+select k.nazwa, w.nazwa, 
+datediff(w.data_rozpoczecia, k.dataUr) as 'Wiek w dniach'
+from kreatura k,
+etapy_wyprawy ew, wyprawa w, sektor s, uczestnicy u
+where ew.sektor = s.id_sektora
+and k.idKreatury = u.id_uczestnika
+and u.id_wyprawy=w.id_wyprawy
+and ew.idWyprawy = w.id_wyprawy
+and s.nazwa = "Chatka dziadka";
